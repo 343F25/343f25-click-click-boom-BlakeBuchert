@@ -17,10 +17,15 @@
       background-color: wheat;
       border: 0.25rem solid #8EE4D7;
     }
+
+    .odd td {
+      background-color: #333333;
+    }
   </style>
 </head>
 
 <body>
+  <h1 id="boom-header"></h1>
   <table>
     <tbody>
       <tr>
@@ -155,34 +160,68 @@
     const clickSound = document.getElementById('click')
     const boomSound = document.getElementById('boom')
     let lastSound = clickSound;
+    // Add the "odd" class to rows with an odd number of cells
+    function updateRowClasses() {
+      document.querySelectorAll('tr').forEach(row => {
+        const cellCount = row.querySelectorAll('td').length;
+        if (cellCount % 2 === 1) {
+          row.classList.add('odd');
+        } else {
+          row.classList.remove('odd');
+        }
+      });
+    }
+
+    // Add an h1 at the top for BOOM text
+
+    // BOOM text toggling
+    const boomHeader = document.getElementById('boom-header');
+    let boomToggle = false;
+    function updateBoomText() {
+      boomToggle = !boomToggle;
+      boomHeader.textContent = boomToggle ? 'BOOM' : '';
+    }
+
+    // Update the BOOM text on each BOOM
+    function updateBoomText() {
+      boomToggle = !boomToggle;
+      boomHeader.textContent = boomToggle ? 'BOOM' : '';
+    }
+
+    // Call updateRowClasses initially to set up the classes
+    updateRowClasses();
 
     // TODO: 1 - make it such that if any table cell is clicked, the onClick function below is executed
     document.querySelectorAll('td').forEach(td => {
       td.addEventListener('click', onClick)
     })
 
-
-
     function onClick(ev) {
-      lastSound.pause()
+      // restart last sound so clicks are crisp
+      lastSound.pause();
       lastSound.currentTime = 0;
-      clickCount++
-      if (clickCount % 3 == 0) {
-        // boom
+
+      clickCount++;
+
+      if (clickCount % 3 === 0) {
+        // BOOM!
         boomSound.play();
-        lastSound = boomSound
+        lastSound = boomSound;
+        updateBoomText();        // <-- toggle H1 on each BOOM
       } else {
         clickSound.play();
-        lastSound = clickSound
+        lastSound = clickSound;
       }
 
-
-
-
-      console.log(`ev in onClick ${ev}`)
+      console.log('ev in onClick', ev)
       // TODO: 2 - REMOVE THE TABLE CELL THAT WAS CLICKED
-      ev.target.remove()
 
+      // Remove the clicked cell
+      const cell = ev.target;
+      cell.remove();
+
+      // Recompute which rows are "odd" based on remaining cell counts
+      updateRowClasses();
     }
   </script>
 </body>
